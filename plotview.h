@@ -45,6 +45,7 @@ signals:
 public slots:
     void cursorsMoved();
     void enableCursors(bool enabled);
+    void enableSampleCursors(bool enabled);
     void enableScales(bool enabled);
     void invalidateEvent();
     void repaint();
@@ -79,6 +80,8 @@ private:
     size_t sampleRate = 0;
     bool timeScaleEnabled;
     int scrollZoomStepsAccumulated = 0;
+    bool sampleCursorEnabled = false;
+    size_t jumpSample = 0;
 
     void addPlot(Plot *plot);
     void emitTimeSelection();
@@ -90,6 +93,7 @@ private:
     void updateViewRange(bool reCenter);
     void updateView(bool reCenter = false);
     void paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
+    void paintSampleCursor(QPainter &painter, QRect &rect, range_t<size_t> sampleRange);
 
     int sampleToColumn(size_t sample);
     size_t columnToSample(int col);

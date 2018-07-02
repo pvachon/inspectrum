@@ -74,4 +74,5 @@ public:
     QLabel *symbolPeriodLabel;
     QCheckBox *scalesCheckBox;
     QLineEdit *jumpSample;
+    QCheckBox *sampleCheckBox;
 };

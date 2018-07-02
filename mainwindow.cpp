@@ -51,6 +51,7 @@ MainWindow::MainWindow()
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
     connect(dock->jumpSample, SIGNAL(textChanged(QString)), this, SLOT(setSampleId(QString)));
+    connect(dock->sampleCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableSampleCursors);
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));

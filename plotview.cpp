@@ -180,6 +180,12 @@ void PlotView::enableCursors(bool enabled)
     viewport()->update();
 }
 
+void PlotView::enableSampleCursors(bool enabled)
+{
+    sampleCursorEnabled = enabled;
+    viewport()->update();
+}
+
 bool PlotView::viewportEvent(QEvent *event) {
     // Handle wheel events for zooming (before the parent's handler to stop normal scrolling)
     if (event->type() == QEvent::Wheel) {
@@ -410,6 +416,7 @@ void PlotView::setCenterSample(long sampleId)
         return;
     }
 
+    jumpSample = sampleId;
     zoomSample = std::max(0l, sampleId - long(columnToSample(width()/2)));
     zoomPos = 0;
 
@@ -457,12 +464,33 @@ void PlotView::paintEvent(QPaintEvent *event)
     if (cursorsEnabled)
         cursors.paintFront(painter, rect, viewRange);
 
+    if (sampleCursorEnabled) {
+        paintSampleCursor(painter, rect, viewRange);
+    }
+
     if (timeScaleEnabled) {
         paintTimeScale(painter, rect, viewRange);
     }
 
 
 #undef PLOT_LAYER
+}
+
+void PlotView::paintSampleCursor(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)
+{
+    if ((sampleRange.minimum > jumpSample) || (sampleRange.maximum < jumpSample)) {
+        return;
+    }
+
+    painter.save();
+
+    QPen pen(Qt::red, 1, Qt::SolidLine);
+    painter.setPen(pen);
+
+    int col = sampleToColumn(jumpSample - sampleRange.minimum);
+    printf("paintSampleCursor: col = %d, zoomSample = %zu, jumpSample = %zu, min=%zu\n", col, zoomSample, jumpSample, sampleRange.minimum);
+    painter.drawLine(col, 0, col, rect.height());
+    painter.restore();
 }
 
 void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sampleRange)

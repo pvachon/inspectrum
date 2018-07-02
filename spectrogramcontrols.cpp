@@ -98,6 +98,10 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     jumpSample->setValidator(new QIntValidator(this));
     layout->addRow(new QLabel(tr("Sample ID:")), jumpSample);
 
+    sampleCheckBox = new QCheckBox(widget);
+    layout->addRow(new QLabel(tr("Show Sample Cursor:")), sampleCheckBox);
+
+
     widget->setLayout(layout);
     setWidget(widget);
 
