@@ -52,6 +52,7 @@ public slots:
     void setFFTAndZoom(int fftSize, int zoomLevel);
     void setPowerMin(int power);
     void setPowerMax(int power);
+    void setCenterSample(long sampleId);
 
 protected:
     void contextMenuEvent(QContextMenuEvent * event) override;

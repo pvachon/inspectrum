@@ -50,6 +50,7 @@ MainWindow::MainWindow()
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
+    connect(dock->jumpSample, SIGNAL(textChanged(QString)), this, SLOT(setSampleId(QString)));
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
@@ -94,6 +95,12 @@ void MainWindow::openFile(QString fileName)
         QMessageBox msgBox(QMessageBox::Critical, "Inspectrum openFile error", QString("%1: %2").arg(fileName).arg(ex.what()));
         msgBox.exec();
     }
+}
+
+void MainWindow::setSampleId(QString sampleId)
+{
+    long sample = sampleId.toLong();
+    plots->setCenterSample(sample);
 }
 
 void MainWindow::setSampleRate(QString rate)

@@ -91,6 +91,13 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    layout->addRow(new QLabel());
+    layout->addRow(new QLabel(tr("<b>Jump</b>")));
+
+    jumpSample = new QLineEdit();
+    jumpSample->setValidator(new QIntValidator(this));
+    layout->addRow(new QLabel(tr("Sample ID:")), jumpSample);
+
     widget->setLayout(layout);
     setWidget(widget);
 

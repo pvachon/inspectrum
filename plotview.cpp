@@ -404,6 +404,18 @@ void PlotView::setFFTAndZoom(int size, int zoom)
     updateView(true);
 }
 
+void PlotView::setCenterSample(long sampleId)
+{
+    if (sampleId < 0) {
+        return;
+    }
+
+    zoomSample = std::max(0l, sampleId - long(columnToSample(width()/2)));
+    zoomPos = 0;
+
+    updateView(true);
+}
+
 void PlotView::setPowerMin(int power)
 {
     powerMin = power;
@@ -478,7 +490,6 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sa
     double tick = firstTick;
 
     while (tick <= stopTime) {
-
         size_t tickSample = tick * sampleRate;
         int tickLine = sampleToColumn(tickSample - sampleRange.minimum);
 
@@ -486,6 +497,8 @@ void PlotView::paintTimeScale(QPainter &painter, QRect &rect, range_t<size_t> sa
         snprintf(buf, sizeof(buf), "%.06f", tick);
         painter.drawLine(tickLine, 0, tickLine, 30);
         painter.drawText(tickLine + 2, 25, buf);
+        snprintf(buf, sizeof(buf), "%zu", tickSample);
+        painter.drawText(tickLine + 2, 38, buf);
 
         tick += durationPerTick;
     }
@@ -532,16 +545,17 @@ void PlotView::scrollContentsBy(int dx, int dy)
 
 void PlotView::updateViewRange(bool reCenter)
 {
-    // Update current view
-    auto start = columnToSample(horizontalScrollBar()->value());
-    viewRange = {start, std::min(start + columnToSample(width()), mainSampleSource->count())};
-
     // Adjust time offset to zoom around central sample
     if (reCenter) {
         horizontalScrollBar()->setValue(
             sampleToColumn(zoomSample) - zoomPos
         );
     }
+
+    // Update current view
+    auto start = columnToSample(horizontalScrollBar()->value());
+    viewRange = {start, std::min(start + columnToSample(width()), mainSampleSource->count())};
+
     // zoomSample = viewRange.minimum + viewRange.length() / 2;
     // zoomPos = width() / 2;
 }
