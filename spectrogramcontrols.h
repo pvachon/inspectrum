@@ -39,6 +39,7 @@ public:
 signals:
     void fftOrZoomChanged(int fftSize, int zoomLevel);
     void openFile(QString fileName);
+    void jumpToSample(long sampleId);
 
 public slots:
     void timeSelectionChanged(float time);
@@ -52,12 +53,18 @@ private slots:
     void powerMaxChanged(int value);
     void fileOpenButtonClicked();
     void cursorsStateChanged(int state);
+    void setSampleScale(QString value);
+    void jumpNextSample();
+    void jumpPrevSample();
+    void setSampleId(QString vaue);
 
 private:
     QWidget *widget;
     QFormLayout *layout;
     void clearCursorLabels();
     void fftOrZoomChanged(void);
+    long sampleScale = 0;
+    long sampleId = 0;
 
 public:
     QPushButton *fileOpenButton;
@@ -74,5 +81,8 @@ public:
     QLabel *symbolPeriodLabel;
     QCheckBox *scalesCheckBox;
     QLineEdit *jumpSample;
+    QLineEdit *nextSampleOffset;
+    QPushButton *jumpNextOffset;
+    QPushButton *jumpPrevOffset;
     QCheckBox *sampleCheckBox;
 };

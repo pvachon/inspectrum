@@ -50,8 +50,8 @@ MainWindow::MainWindow()
     connect(dock->cursorsCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableCursors);
     connect(dock->scalesCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableScales);
     connect(dock->cursorSymbolsSpinBox, static_cast<void (QSpinBox::*)(int)>(&QSpinBox::valueChanged), plots, &PlotView::setCursorSegments);
-    connect(dock->jumpSample, SIGNAL(textChanged(QString)), this, SLOT(setSampleId(QString)));
     connect(dock->sampleCheckBox, &QCheckBox::stateChanged, plots, &PlotView::enableSampleCursors);
+    connect(dock, SIGNAL(jumpToSample(long)), plots, SLOT(setCenterSample(long)));
 
     // Connect dock outputs
     connect(plots, SIGNAL(timeSelectionChanged(float)), dock, SLOT(timeSelectionChanged(float)));
@@ -98,12 +98,6 @@ void MainWindow::openFile(QString fileName)
     }
 }
 
-void MainWindow::setSampleId(QString sampleId)
-{
-    long sample = sampleId.toLong();
-    plots->setCenterSample(sample);
-}
-
 void MainWindow::setSampleRate(QString rate)
 {
     int sampleRate = rate.toInt();
@@ -119,3 +113,9 @@ void MainWindow::setSampleRate(int rate)
 {
     dock->sampleRate->setText(QString::number(rate));
 }
+
+void MainWindow::jumpToSample(long sampleId)
+{
+    plots->setCenterSample(sampleId);
+}
+

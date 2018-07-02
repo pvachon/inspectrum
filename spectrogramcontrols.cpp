@@ -91,16 +91,25 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     symbolPeriodLabel = new QLabel();
     layout->addRow(new QLabel(tr("Symbol period:")), symbolPeriodLabel);
 
+    // Sample navigation
     layout->addRow(new QLabel());
-    layout->addRow(new QLabel(tr("<b>Jump</b>")));
+    layout->addRow(new QLabel(tr("<b>Sample Navigation</b>")));
 
     jumpSample = new QLineEdit();
     jumpSample->setValidator(new QIntValidator(this));
-    layout->addRow(new QLabel(tr("Sample ID:")), jumpSample);
+    layout->addRow(new QLabel(tr("Jump to sample:")), jumpSample);
+
+    nextSampleOffset = new QLineEdit();
+    nextSampleOffset->setValidator(new QIntValidator(this));
+    nextSampleOffset->setText(tr("0"));
+    layout->addRow(new QLabel(tr("Next Sample Offset:")), nextSampleOffset);
 
     sampleCheckBox = new QCheckBox(widget);
     layout->addRow(new QLabel(tr("Show Sample Cursor:")), sampleCheckBox);
 
+    jumpPrevOffset = new QPushButton("< Previous", widget);
+    jumpNextOffset = new QPushButton("Next >", widget);
+    layout->addRow(jumpPrevOffset, jumpNextOffset);
 
     widget->setLayout(layout);
     setWidget(widget);
@@ -111,6 +120,15 @@ SpectrogramControls::SpectrogramControls(const QString & title, QWidget * parent
     connect(cursorsCheckBox, SIGNAL(stateChanged(int)), this, SLOT(cursorsStateChanged(int)));
     connect(powerMinSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMinChanged(int)));
     connect(powerMaxSlider, SIGNAL(valueChanged(int)), this, SLOT(powerMaxChanged(int)));
+    connect(nextSampleOffset, SIGNAL(textChanged(QString)), this, SLOT(setSampleScale(QString)));
+    connect(jumpSample, SIGNAL(textChanged(QString)), this, SLOT(setSampleId(QString)));
+    connect(jumpNextOffset, SIGNAL(clicked()), this, SLOT(jumpNextSample()));
+    connect(jumpPrevOffset, SIGNAL(clicked()), this, SLOT(jumpPrevSample()));
+}
+
+void SpectrogramControls::setSampleScale(QString value)
+{
+    sampleScale = value.toLong();
 }
 
 void SpectrogramControls::clearCursorLabels()
@@ -235,3 +253,35 @@ void SpectrogramControls::zoomOut()
 {
     zoomLevelSlider->setValue(zoomLevelSlider->value() - 1);
 }
+
+void SpectrogramControls::setSampleId(QString value)
+{
+    sampleId = value.toLong();
+    emit jumpToSample(sampleId);
+}
+
+void SpectrogramControls::jumpNextSample()
+{
+    long next = sampleId + sampleScale;
+    sampleId = next;
+    char buf[128];
+    snprintf(buf, 128, "%ld", next);
+    jumpSample->setText(buf);
+    emit jumpToSample(next);
+}
+
+void SpectrogramControls::jumpPrevSample()
+{
+    long next = std::max(0l, sampleId - sampleScale);
+    if (next == 0) {
+        return;
+    }
+
+    sampleId = next;
+
+    char buf[128];
+    snprintf(buf, 128, "%ld", next);
+    jumpSample->setText(buf);
+    emit jumpToSample(next);
+}
+
